@@ -1,0 +1,331 @@
+
+1.git 初始化流程
+git --version 输出版本信息
+git config --global user.name 查看或设置账户名称
+git config --global user.email 查看或设置账户邮件
+
+git init 初始化当前文件位置作为工作空间（或者添加路径指定位置）操作完成会生成一个.git文件
+
+2.git 存储流程
+   
+   代码工作区————>执行git add +(文件名称)————>暂存区（临时存储）————>执行git commit -m "上传Log" ————>本地库（历史版本）
+   
+3.常命令
+	git add 文件名称                添加文件 ，将文件添加到暂存区
+	
+	git add . 					    将当前目录下的所有变化（即已修改的文件、已删除的文件和新创建的文件）添加到暂存区
+	
+	git commit -m "提交注释"        提交文件，将文件提交到本地库 提交的是暂存区的内容
+	
+	git commit -am "提交注释"       添加并 提交所有文件，将文件提交到本地库 提交的是暂存区的内容
+	
+	git status 						查看状态，查看目录中是否还有文件未提交
+	
+	git diff 						查看文件修改对比差异
+	git diff [文件名]         		将工作区的文件和暂存区文件进行比较
+	
+	git log 						查看日志，查看历史记录，显示从近到远的日志 （q:退出显示）包含版本号
+	clear							清除窗体记录
+	
+	git log --pretty=oneline        简化显示log 包含版本号
+	git reflog 						查看历史记录，并以简短信息显示 包含版本号  HEAD@{移动到当前版本需要多少步}
+	
+	git reset --hard[局部版本号]    前进回退，前进回退版本  局部版本号：输入简短版本号
+	
+	git rm [文件名]						删除文件 （暂存区） 提交后保存到版本库
+	第二种删除方式 永久删除，无法指令恢复，只能返回之前版本
+	1. 手动删除文件 2. git add 添加文件 3.git commit 提交文件
+	
+	恢复文件
+	1.git reset --hard[局部版本号] 
+	2. git checkout [文件名] 恢复手动删除的文件 恢复没有添加提交的文件 
+	
+	
+4.分支操作
+    1.创建分支  增加一个分支进行操作（本地操作）
+	git branch [分支名称]
+	
+	2.查看分支
+	git branch -v 列出所有本地分支	
+	git branch -v 列出所有本地和远程分支
+	3.切换分支
+	git checkout [分支名称]
+	
+	4.合并分支
+		1.切换到接受合并的分支  一般是主分支
+		 git checkout [接受合并的分支名称]
+		2.执行 merge 命令
+		 git merge [待合并的分支名称]
+		 
+	5.删除分支命令
+	git branch -d [分支名称] 本地删除
+	git branch -D [分支名称] 强制删除本地未合并的分支
+	git push origin --delete <分支名称>  删除远程分支
+	
+	6.分支上传
+	  6.1创建本地分支
+	  6.2远程分支创建
+	     git push --set-upstream origion [分支名称]  等价git push -u origin <branch-name>  -u是缩写形式
+		 
+	7.强制推送。如果你确定要覆盖远程分支的内容（例如，你知道远程分支的更改不重要），可以使用强制推送：
+	git push origin branch_name --force
+	
+5.远程仓库操作
+	1.git clone [地址]  				克隆远程仓库文件
+	2.git push [地址][分支名]         	推送 （地址和分支名称可以省略）
+	3.git pull 							拉取远程仓库内容
+	
+6.远程仓库扩展操作
+    1.git remote -v           			查看当前所有远程地址别名
+	2.git remote add  [别名][远程地址]	增加远程地址
+	3.git remote remove  [别名]			删除远程地址
+7.密匙 添加
+       生成 SSH 密钥对（如果没有）
+       如果你没有 SSH 密钥，可以使用以下命令生成一对新的密钥：
+
+    1. ssh-keygen -t rsa -b 4096 -C "your_email@example.com"  根据提示选择文件存储位置（C:\Users\<YourUsername>\.ssh\id_rsa（Windows）等默认位置。），然后设置一个可选的口令。完成后，你会在 .ssh 目录中找到新生成的密钥文件。	
+	   id_rsa：这是标准的私钥文件。
+       id_rsa.pub：这是与私钥对应的公钥文件。 公钥放到gitblit服务器
+	   
+	2.验证密钥是否添加成功
+	   设置成功之后，git操作不需要在输入账号密码
+	
+8.解决冲突问题
+    要点：如果不是基于远程仓库的最新版本所做的修改，不能直接推送，必须先拉取。拉取下来之后进入冲突状态则 修改->add->commit  即可。推送完成提醒成员及时拉取更新。
+	
+	1.git pull 先拉区再推送，预防冲突
+	2.冲突解决后重新推送，通知团队拉取。 
+	
+	git fetch
+		作用：git fetch 会从远程仓库下载所有的更新（新的分支、标签和提交），但不会自动合并这些变化到当前的工作目录中。
+		过程：执行这个命令后，Git 会更新本地的远程跟踪分支（如 origin/main），但你的本地分支（如 main）不会更改。
+		使用场景：适用于你想先查看远程仓库的更新，决定如何处理这些更新而不立即合并时。
+	git pull
+		作用：git pull 是 git fetch 和 git merge 的封装，意味着它会先从远程仓库获取更新，然后立即尝试将这些更新合并到当前分支中。
+		过程：执行这个命令时，Git 会先下载远程更新（就像 git 	fetch），然后把这些更新合并到你的当前分支。因为涉及合并，可能会产生冲突，需要手动解决。
+		使用场景：适用于你希望获取远程更新并立即应用这些更改到当前分支时。
+	总结
+		git fetch 只是下载更新，让你看到远程仓库的最新状态，但不改变你当前的工作分支。
+		git pull 则直接将远程仓库的更新合并到你的当前工作分支。
+		通常在了解远程仓库的状态时使用 git fetch；而在确保与你的本地分支进行同步时使用 git pull。根据需求选择合适的命令是关键。 
+		
+9.理解同步的过程
+
+  1.查看远程状态：
+
+		使用 git fetch 后，你可以检查远程追踪分支（如 origin/main）的最新状态，而不影响你的本地分支。这是一个安全的方式来确认有哪些新的提交可以合并。
+  2.合并更新：
+
+		在你确认了从远程仓库获取的更新后，可以使用 git pull 来直接将这些更新合并到你的当前工作分支。
+		这样可以确保你的分支包含了最新的远程更改，同时解决可能的合并冲突。
+  3.分享更改：
+		当你完成了本地的更改并进行了提交后，使用 git push 将这些修改上传到远程仓库。同样，推送是为了与团队成员共享你的工作。
+		
+10.保存贮藏
+   在TortoiseGit中，“保存贮藏”（Stash）操作用于将当前工作区的更改暂时存储起来，以便你可以在不提交这些更改的情况下切换到其他分支或执行其他操作。这是一种帮助管理和暂时保存正在进行的工作的有效方式。
+
+   1.“保存贮藏”的操作过程
+		保留当前更改：将当前工作目录中的未提交更改（包括已修改的文件和新建的文件）保存到一个临时区域。
+		恢复到干净的状态：保存后，工作区将返回到最后一次提交的干净状态。
+		在需要时恢复：你可以通过“应用贮藏”将之前保存的更改恢复到工作区。
+   2.使用“保存贮藏”的原因
+		切换分支：在没有提交当前工作内容的情况下，需要快速切换到另一个分支进行检查或修复。
+		清理工作区：允许你在保持工作进度的同时，清理当前工作区，以便处理其他事务。
+		
+11.标签管理(备注版本号)
+    
+	1.git tag [标签名称]			为当前版本兴建标签 ,可以创建多个标签
+	2.git tag -a [标签名称] -m ""   添加标签并指定描述信息
+	3.git tag -d [标签名称]			删除本地标签
+	4.git tag 						查看所有标签
+	5.git push origin [标签名称]    推送一个标签
+	6.git push origin --tags    	推送所有标签
+	7.git push origin :ref/tags/[标签名称]   	删除一个远程标签
+	8.git show [标签名称] 			查看详细标签信息
+	
+12.通过命令行推送一个已存在的版本库 或者直接指令地址推送
+    git remote add origin ssh://admin@172.31.53.77:29418/gitLearn.git
+    git push -u origin master
+	
+13.通过命令行创建一个新的版本库
+    touch README.md
+    git init
+    git add README.md
+    git commit -m "first commit"
+    git remote add origin ssh://admin@172.31.53.77:29418/gitLearn.git
+    git push -u origin master
+	
+	
+	Git LFS(Large File Storage) 可以把音频样本，视频，数据集，相片等大文件替换成文本指针文件，而这些二进制大文件会存储在远程 LFS 服务器上。类似支持 Git LFS 的平台有 GitHub/Gitlab/bitbucket 等。
+
+	在实际 Git 工程项目中，会出现 Jenkins git clone 失败，git clone 缓慢等，影响 CI/CD 的执行，我们可以通过 Git LFS 对仓库进行瘦身，提升 CI/CD 的质量效率。 Git-LFS 能降低整个仓库的体积，大大提高首次 git clone 的速度；只有执行 git checkout 分支和 commit 时，才会下载当前需要用到 LFS 文件，减少本地磁盘空间占用。
+
+	对于人工智能、机器学习的研发来说，音视频，数据集等占用很大的工程存储占比。
+	对于智能硬件、嵌入式相关的研发来说，*.so，*.a 等一些 prebuilts 文件会占用很大的存储。
+	对于前端开发的研发来说，png，jpg 等文件会占用较多存储空间。
+	还有些常见的文件，如 docx 文档，zip 压缩包等，可能也需要通过 Git 管理起来。
+	这些非文本文件数量不断增多，版本也经常迭代，本地 Git 仓库占用磁盘空间越来越大，git checkout 命令会变得非常缓慢，而且其他用户 clone 仓库时也会变得异常缓慢。Git-LFS 能帮助你解决这些问题。
+14.git filestore 大文件上传（保证服务器和客户端安装git时安装git lfs）
+	1.git lfs install  安装 lfs  每个账户只需要运行一次
+	2.git lfs track *# 追踪要上传的大文件，*表示路径下的所有文件 ，或者指定后缀
+	3.git add .gitattributes #添加先上传的属性文件(要先上传属性文件，不然有可能失败)
+	4.git commit -m "pre" #添加属性文件上传的说明
+	5.git remote add origin https://github.com/Youpeng-Zhang/MOP.git #建立本地和Github仓库的链接
+	6.git push origin master #上传属性文件
+	7.git add * #添加要上传的大文件，*表示路径下的所有文件
+	8.git commit -m "Git LFS commit" #添加大文件上传的说明
+	9.git push origin master #上传大文件
+
+	10.或者省略4，5步骤直接按照步骤1，2，3，7，8，9
+
+
+
+15 常用指令
+	1 #追踪指定的大文件，支持特定文件名，也支持正则表达式
+	2 git lfs track 'test.txt'
+	3 #查看现有的文件追踪模式
+	4 git lfs track
+	5 #取消某文件的追踪
+	6 git lfs untrack 'test.txt'
+	7 #查看git lfs 对象的状态
+	8 git lfs status
+	9 #显示当前跟踪的文件列表
+	10 git lfs ls-files
+	11 #检查当前所用lfs的版本
+	12 git lfs version
+	13 #迁移已有的仓库
+	14 git lfs migrate import --include="*.psd" --everything
+	15 #已有的仓库不适合 git lfs，则可以恢复
+	16 git lfs migrate export --include="*.psd" --everything
+	17 #设置自己的 LFS 服务器 API 接口
+	18git config -f .lfsconfig lfs.url https://mx other_server.example.com/foo/bar/
+	#只获取仓库本身，不获取任何LFS对象19
+	19GIT LFS SKIP SMUDGE=l git clone https://github.com/xx/xx.git
+	21#获取当前commit下包含的LFS对象的当前版本	
+	22 git lfs pull	
+	23 #仅获取指定目录下的LFS对象
+	24 git config lfs.fetchinclude'images/**'#配置指定包含某文件夹
+	25 git config lfs.fetchexclude 'videos/**'#配置排除
+	26 #-次获取LFS对象的最近版本
+	27 #Git LFS 相关命令在获取 LFS 对象时，默认仅会获取该对象当前被引用的版本，如果想要一次获取
+	28 git config lfs.fetchrecentcommitsdays 7 # 7表示同时下载过去7天内的版本该项配置默认值
+	29 #有了对最近的定义后，我们可以选择在执行 gitlfs fetch 命令时，加上 --recent 参数以同时
+	30 git config lfs.fetchrecentalways true
+16.Git LFS 优势
+	Git LFS（Git Large File Storage）是一个扩展 Git 的工具，旨在更好地管理大文件。它的主要优势包括：
+
+	1. **减小 Git 仓库大小**：Git LFS 将大文件（如音频、视频、图像等）存储在外部服务器上，而不是直接存储在 Git 仓库中，从而显著减少仓库的体积。
+
+	2. **提高性能**：由于不需要将所有大文件直接存储在 Git 中，克隆和拉取仓库时的速度会更快，尤其是在处理大型项目时。
+
+	3. **简化大文件管理**：Git LFS 允许更轻松地跟踪和管理大文件，使得团队可以在版本控制系统中更加高效地协作。
+
+	4. **与常规 Git 命令兼容**：Git LFS 可以与 Git 的常规命令（如 `clone`、`pull`、`push` 等）集成，用户无需学习新的工作流。
+
+	5. **支持文件版本控制**：Git LFS 为大文件提供版本控制，使得可以轻松地查看和恢复历史版本。
+
+	6. **适应大规模开发**：在大规模团队和项目中，Git LFS 可以更好地适应不同开发者的需求，尤其是在频繁需要处理大文件的情况下。
+
+	7. **云存储集成**：Git LFS 可以与多种云存储服务（如 GitHub、GitLab、Bitbucket 等）集成，便于团队在云端管理大文件。
+
+	总之，Git LFS 是处理和管理 Git 仓库中大文件的理想解决方案，能够提高性能并简化工作流程。
+	
+17.git clone 版本库时会将lfs 管控的文件一起克隆下来吗
+	是的，当你使用 `git clone` 命令克隆一个 Git 仓库时，Git LFS 管控的文件也会被克隆下来，但其方式有所不同。
+
+	具体来说：
+
+	1. **指针文件克隆**：在初始克隆过程中，Git LFS 只会克隆大文件的指针文件，而不是实际的大文件。指针文件包含了关于大文件的信息，包括其唯一的标识符。
+
+	2. **下载大文件**：在克隆完成后，Git LFS 会自动下载指针文件所引用的实际大文件。这通常会在你第一次访问文件（例如，使用 `git checkout`）时进行，或者你可以手动执行 `git lfs pull` 来立即下载所有 LFS 文件。
+
+	因此，虽然克隆过程中大文件并不会立即下载，但它们会在后续操作中自动获取。确保在你的环境中正确安装并配置了 Git LFS，以便顺利下载和管理这些文件。
+
+18  还原(restore) 重置(reset) 和恢复(revert )的区别
+	 使用 git revert：适合在公共分支上撤销更改，因为它不会改变历史，其他合作者不会受到影响。
+	 使用 git reset：适合于私有分支或本地开发。需要注意的是，如果已经共享或者推送的提交，就不应使用 git reset，因为它会改变提交的历史，可能造成问题。
+
+19. Git 还原（git restore） 适用2.23 版本 旧版本还原使用 CheckOut 
+	用途：主要用于撤销更改或恢复文件到某个状态。
+	适用场景：
+	取消对某个文件的未提交修改，将其恢复到最近一次提交的状态。
+	可用于将文件从特定的提交中恢复（使用 git restore --source <commit-id> <file>）。
+	注意：git restore 仅影响工作目录和暂存区，不会改变历史记录。
+	命令示例：
+	恢复指定文件到最后一次提交：
+	git restore <file>  
+	
+	恢复文件到特定提交：
+	git restore --source <commit-id> <file>  	
+	
+	
+    1.checkout 恢复未暂存的更改 当前版本恢复
+	  git checkout <file> 
+	2.checkout 恢复特定版本的文件：也可以通过指定提交 ID 来恢复某个特定版本的文件：  
+	  git checkout <commit-id> -- <file>
+	3.恢复已经暂存的文件
+	   git reset <file>						                    复位
+	   git checkout <commit-id> -- <file>  /git checkout <file> 恢复
+	   
+20. Git 重置（git reset）
+	用途：用于重写历史记录，改变当前分支和工作目录状态。
+	适用场景：
+	需要取消最近的提交，并将更改移回暂存区或者工作目录。
+	可以用于前进或回退到某个特定的提交（使用不同的参数控制更新的程度，如软重置、混合重置和硬重置）。
+	类型：
+	--soft：仅重置 HEAD 指针，保留工作目录和暂存区的更改。适合重新提交更改。
+	--mixed（默认）：重置 HEAD 和暂存区，保留工作目录中的更改。
+	--hard：重置 HEAD、暂存区和工作目录，所有更改都会丢失。
+	命令示例：
+
+	重置到上一个提交（混合重置，默认）：	
+	git reset <commit-id> /git reset --mixed <commit-id>
+	
+	软重置到特定提交：	
+	git reset --soft <commit-id>
+	
+	硬重置到特定提交：	
+	git reset --hard <commit-id>    相似功能————git checkout -f <commit-id> 
+	 
+	 
+21. git revert是一个非常有用的Git命令，主要用于撤销之前的提交。
+	它通过创建一个新的提交来反转一个或多个已经存在的提交，从而保留项目的历史记录。
+	
+	1. 基本语法
+	git revert [options] <commit> 
+	 options常用选项
+	-n 或 --no-commit：反转更改但不立即提交，可以进行进一步修改。
+	-e 或 --edit：在创建反向更改的提交时打开编辑器以允许你编辑提交信息（默认会打开编辑器）。
+	-m <parent-number>：在反转合并提交时指定要保留的父提交（在合并提交多亲本的情况下使用）。
+	
+	反转单个提交
+		git revert <commit>  
+	如果有冲突解决后
+		git add <冲突文件>
+		反转继续
+		git revert --continue 
+		此时提醒修改提交反转信息
+		  1.按 Esc 键以确保你处于命令模式。
+		  2.输入 :wq 来保存和退出，之后按 Enter。
+		  3.如果你只想退出而不保存更改，可以输入 :q! 并按 Enter。
+	如果突出反转
+		  1.git revert --abort
+	
+
+22.签出功能
+
+
+
+
+23 gitignore  忽略文件的版本跟踪
+	1.空行不匹配任何内容
+	2.#用于注释，\表示转义，使用实体\，需要家引号"\"
+	3.*可以匹配任何字符（0或多次），？可以匹配任何字1个符。（都 不可以匹配/）
+	4./用于分隔目录：
+		1.当/在开头时，表示从.gitignore 文件所在目录开始匹配。否则下级都将匹配。
+		2.当/在末尾时，只匹配目录，否则同名的目录和文件都将匹配
+	5.原先被排除的文件，使用！后该文件会重新被包含。如果该文件的父目录被排除了，则无效。
+	6.[]通常用于匹配一个字符列表，如a[mb]z 可以匹配amz和anz
+	7.**用于匹配多级目录，如a/**/b 可以匹配a/b，a/s/d/b 等。
+	
+
